@@ -115,9 +115,9 @@
         assets.forEach(function (a) {
           var name = a.name;
           var url  = a.browser_download_url;
-          if (/Web Setup.*\.exe$/i.test(name)) win.push({ name: name, url: url });
-          else if (/\.dmg$/i.test(name))       mac.push({ name: name, url: url });
-          else if (/\.AppImage$/i.test(name))  linux.push({ name: name, url: url });
+          if (/Web[- ]?Setup.*\.exe$|\.exe$/i.test(name)) win.push({ name: name, url: url });
+          else if (/\.dmg$/i.test(name))                 mac.push({ name: name, url: url });
+          else if (/\.AppImage$/i.test(name))            linux.push({ name: name, url: url });
         });
         return { win: win, mac: mac, linux: linux };
       }
