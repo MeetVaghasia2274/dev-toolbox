@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!--
+    Content-Security-Policy:
+      default-src 'self'   – only load resources from the app bundle
+      style-src 'self'     – external stylesheets from bundle only, no inline styles
+      script-src 'self'    – external scripts from bundle only, no inline scripts
+    This means NO <script>…</script> blocks here and NO style="…" attributes.
+  -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self'; script-src 'self'" />
+  <title>Dev Toolbox</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- Left sidebar: navigation tabs + version badge -->
+    <nav class="sidebar" role="navigation" aria-label="Tools">
+      <div class="sidebar-header">
+        <span class="sidebar-logo" aria-hidden="true">⚙</span>
+        <span class="sidebar-title">Dev Toolbox</span>
+      </div>
+
+      <ul class="tab-list" role="tablist">
+        <li role="presentation">
+          <button id="tab-formatter" class="tab-btn active"
+                  role="tab" aria-selected="true" aria-controls="panel-formatter"
+                  data-panel="formatter">
+            <span class="tab-icon" aria-hidden="true">{ }</span>
+            JSON Formatter
+          </button>
+        </li>
+        <li role="presentation">
+          <button id="tab-diff" class="tab-btn"
+                  role="tab" aria-selected="false" aria-controls="panel-diff"
+                  data-panel="diff">
+            <span class="tab-icon" aria-hidden="true">⇄</span>
+            JSON Diff
+          </button>
+        </li>
+        <li role="presentation">
+          <button id="tab-api" class="tab-btn"
+                  role="tab" aria-selected="false" aria-controls="panel-api"
+                  data-panel="api">
+            <span class="tab-icon" aria-hidden="true">⚡</span>
+            API Tester
+          </button>
+        </li>
+        <li role="presentation">
+          <button id="tab-converter" class="tab-btn"
+                  role="tab" aria-selected="false" aria-controls="panel-converter"
+                  data-panel="converter">
+            <span class="tab-icon" aria-hidden="true">⇌</span>
+            JSON Converter
+          </button>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <span id="app-version" class="version-badge">v—</span>
+      </div>
+    </nav>
+
+    <!-- Main content area: one panel per tool, only active one visible -->
+    <main class="main-panel">
+
+      <!-- Panel 1: JSON Formatter -->
+      <section id="panel-formatter" class="panel active"
+               role="tabpanel" aria-labelledby="tab-formatter">
+        <h1 class="panel-title">JSON Formatter</h1>
+        <div class="formatter-layout">
+          <textarea id="formatter-input" class="code-area"
+                    placeholder="Paste JSON here…" spellcheck="false"></textarea>
+          <div class="toolbar">
+            <button id="formatter-prettify" class="btn btn-primary">Prettify</button>
+            <button id="formatter-minify" class="btn btn-secondary">Minify</button>
+            <button id="formatter-clear" class="btn btn-ghost">Clear</button>
+          </div>
+          <div id="formatter-output" class="output-panel" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- Panel 2: JSON Diff -->
+      <section id="panel-diff" class="panel"
+               role="tabpanel" aria-labelledby="tab-diff">
+        <h1 class="panel-title">JSON Diff</h1>
+        <div class="diff-layout">
+          <div class="diff-inputs">
+            <label class="input-label" for="diff-original">Original</label>
+            <textarea id="diff-original" class="code-area"
+                      placeholder="Original JSON…" spellcheck="false"></textarea>
+            <label class="input-label" for="diff-changed">Changed</label>
+            <textarea id="diff-changed" class="code-area"
+                      placeholder="Changed JSON…" spellcheck="false"></textarea>
+          </div>
+          <div class="toolbar">
+            <button id="diff-compare" class="btn btn-primary">Compare</button>
+            <button id="diff-clear" class="btn btn-ghost">Clear</button>
+          </div>
+          <div id="diff-output" class="output-panel" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- Panel 3: API Tester -->
+      <section id="panel-api" class="panel"
+               role="tabpanel" aria-labelledby="tab-api">
+        <h1 class="panel-title">API Tester</h1>
+        <div class="api-layout">
+          <div class="api-url-row">
+            <select id="api-method" class="method-select" aria-label="HTTP method">
+              <option value="GET">GET</option>
+              <option value="POST">POST</option>
+              <option value="PUT">PUT</option>
+              <option value="PATCH">PATCH</option>
+              <option value="DELETE">DELETE</option>
+            </select>
+            <input id="api-url" class="url-input" type="url"
+                   value="https://jsonplaceholder.typicode.com/todos/1"
+                   placeholder="https://…" aria-label="Request URL" />
+            <button id="api-send" class="btn btn-primary">Send</button>
+          </div>
+          <div class="api-extra">
+            <label class="input-label" for="api-headers">Headers (JSON object)</label>
+            <textarea id="api-headers" class="code-area small"
+                      placeholder='{ "Content-Type": "application/json" }'
+                      spellcheck="false"></textarea>
+            <label class="input-label" for="api-body">Body</label>
+            <textarea id="api-body" class="code-area small"
+                      placeholder="Request body…" spellcheck="false"></textarea>
+          </div>
+          <div id="api-status-bar" class="status-bar" aria-live="polite"></div>
+          <div id="api-output" class="output-panel" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- Panel 4: JSON Converter -->
+      <section id="panel-converter" class="panel"
+               role="tabpanel" aria-labelledby="tab-converter">
+        <h1 class="panel-title">JSON Converter</h1>
+        <div class="converter-layout">
+          <textarea id="converter-input" class="code-area"
+                    placeholder="Paste JSON here…" spellcheck="false"></textarea>
+          <div class="toolbar">
+            <button id="converter-yaml" class="btn btn-primary">to YAML</button>
+            <button id="converter-csv" class="btn btn-secondary">to CSV</button>
+            <button id="converter-ts" class="btn btn-secondary">to TypeScript</button>
+            <button id="converter-clear" class="btn btn-ghost">Clear</button>
+          </div>
+          <div id="converter-output" class="output-panel" aria-live="polite"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- app.js loaded last so DOM is ready; no defer needed (bottom of body) -->
+  <script src="app.js"></script>
+</body>
+</html>

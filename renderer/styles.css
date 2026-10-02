@@ -1,0 +1,367 @@
+/* styles.css — Dev Toolbox dark theme
+   No inline styles or framework classes; everything lives here.
+   Color palette uses HSL tokens for easy theming. */
+
+/* ── Reset & base ─────────────────────────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Background scale */
+  --bg-base:    hsl(228, 14%, 8%);
+  --bg-sidebar: hsl(228, 16%, 10%);
+  --bg-panel:   hsl(228, 12%, 12%);
+  --bg-surface: hsl(228, 12%, 16%);
+  --bg-hover:   hsl(228, 14%, 20%);
+
+  /* Accent */
+  --accent:        hsl(220, 90%, 62%);
+  --accent-dim:    hsl(220, 60%, 40%);
+  --accent-glow:   hsl(220, 90%, 62%, 0.18);
+
+  /* Text */
+  --text-primary:   hsl(220, 20%, 92%);
+  --text-secondary: hsl(220, 10%, 58%);
+  --text-muted:     hsl(220, 8%, 38%);
+
+  /* Semantic */
+  --green:  hsl(142, 70%, 52%);
+  --red:    hsl(0,   80%, 62%);
+  --yellow: hsl(45,  90%, 58%);
+
+  /* Sizing */
+  --sidebar-w: 200px;
+  --radius: 8px;
+  --radius-sm: 4px;
+
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg-base);
+}
+
+body {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── App shell layout ─────────────────────────────────────────────────────── */
+
+.app-shell {
+  display: flex;
+  height: 100vh;
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────────────── */
+
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--bg-sidebar);
+  border-right: 1px solid hsl(228, 14%, 18%);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 16px 18px;
+  border-bottom: 1px solid hsl(228, 14%, 18%);
+}
+
+.sidebar-logo {
+  font-size: 20px;
+  color: var(--accent);
+}
+
+.sidebar-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+}
+
+.tab-list {
+  list-style: none;
+  padding: 10px 8px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+}
+
+.tab-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.tab-icon {
+  font-size: 15px;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid hsl(228, 14%, 18%);
+}
+
+.version-badge {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+/* ── Main panel ───────────────────────────────────────────────────────────── */
+
+.main-panel {
+  flex: 1;
+  overflow: hidden;
+  background: var(--bg-panel);
+}
+
+.panel {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  padding: 24px 28px;
+  overflow-y: auto;
+  gap: 14px;
+}
+
+.panel.active {
+  display: flex;
+}
+
+.panel-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  border-bottom: 1px solid hsl(228, 14%, 20%);
+  padding-bottom: 12px;
+}
+
+/* ── Shared layout helpers ────────────────────────────────────────────────── */
+
+.formatter-layout,
+.diff-layout,
+.api-layout,
+.converter-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.diff-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 8px 16px;
+}
+
+.diff-inputs .input-label:first-child { grid-column: 1; }
+.diff-inputs .input-label:nth-child(3) { grid-column: 2; }
+.diff-inputs .code-area:nth-child(2)   { grid-column: 1; }
+.diff-inputs .code-area:nth-child(4)   { grid-column: 2; }
+
+/* ── Form elements ────────────────────────────────────────────────────────── */
+
+.input-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.code-area {
+  width: 100%;
+  flex: 1;
+  min-height: 140px;
+  padding: 12px;
+  background: var(--bg-surface);
+  border: 1px solid hsl(228, 14%, 22%);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: "Fira Code", "Cascadia Code", monospace;
+  font-size: 13px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.code-area:focus {
+  border-color: var(--accent-dim);
+}
+
+.code-area.small {
+  min-height: 70px;
+}
+
+/* ── Toolbar ──────────────────────────────────────────────────────────────── */
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+
+.btn {
+  padding: 8px 18px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--accent);
+  color: hsl(220, 14%, 8%);
+}
+
+.btn-primary:hover { opacity: 0.88; }
+
+.btn-secondary {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid hsl(228, 14%, 26%);
+}
+
+.btn-secondary:hover { background: var(--bg-hover); }
+
+.btn-ghost {
+  background: none;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+}
+
+.btn-ghost:hover { color: var(--text-secondary); }
+
+/* ── Output panel ─────────────────────────────────────────────────────────── */
+
+.output-panel {
+  flex: 1;
+  min-height: 120px;
+  padding: 12px;
+  background: var(--bg-surface);
+  border: 1px solid hsl(228, 14%, 22%);
+  border-radius: var(--radius);
+  font-family: "Fira Code", "Cascadia Code", monospace;
+  font-size: 13px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow-y: auto;
+  color: var(--text-primary);
+}
+
+/* ── Diff result colors ───────────────────────────────────────────────────── */
+
+.diff-added   { color: var(--green); }
+.diff-removed { color: var(--red); }
+.diff-changed { color: var(--yellow); }
+.diff-none    { color: var(--text-muted); }
+
+/* ── Error / success states ───────────────────────────────────────────────── */
+
+.error-text { color: var(--red); }
+
+/* ── API Tester ───────────────────────────────────────────────────────────── */
+
+.api-url-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.method-select {
+  padding: 8px 10px;
+  background: var(--bg-surface);
+  border: 1px solid hsl(228, 14%, 22%);
+  border-radius: var(--radius-sm);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+}
+
+.url-input {
+  flex: 1;
+  padding: 8px 12px;
+  background: var(--bg-surface);
+  border: 1px solid hsl(228, 14%, 22%);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.url-input:focus { border-color: var(--accent-dim); }
+
+.api-extra {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.status-bar {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-height: 22px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.status-ok    { color: var(--green); }
+.status-error { color: var(--red); }
+
+/* ── Scrollbars (Chromium) ────────────────────────────────────────────────── */
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: hsl(228, 14%, 28%);
+  border-radius: 3px;
+}
