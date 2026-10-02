@@ -1,0 +1,7 @@
+# pnpm-workspace.yaml — pnpm 12 project configuration
+# pnpm 12 reads all settings from this file. .npmrc is only for auth/registry.
+# nodeLinker: hoisted is required for electron-builder to find all dependencies.
+# allowBuilds: allows electron's postinstall script to download the binary.
+nodeLinker: hoisted
+allowBuilds:
+  electron: true
