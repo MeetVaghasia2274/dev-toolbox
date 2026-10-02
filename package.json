@@ -1,0 +1,47 @@
+{
+  "name": "dev-toolbox",
+  "version": "1.0.0",
+  "description": "A JSON and API toolkit for developers",
+  "main": "main.js",
+  "packageManager": "pnpm@12.5.1",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.example.devtoolbox",
+    "productName": "Dev Toolbox",
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**"
+    ],
+    "publish": {
+      "provider": "github",
+      "owner": "MeetVaghasia2274",
+      "repo": "dev-toolbox",
+      "releaseType": "release"
+    },
+    "win": {
+      "target": "nsis-web"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false
+    },
+    "mac": {
+      "target": ["dmg", "zip"],
+      "identity": null
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}
