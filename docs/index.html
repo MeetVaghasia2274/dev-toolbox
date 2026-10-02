@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dev Toolbox — Download</title>
+  <meta name="description" content="Download Dev Toolbox, a JSON and API toolkit for developers. Available for Windows, macOS, and Linux." />
+  <style>
+    /* Self-contained: inline CSS is fine for a static download page (not inside Electron) */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      hsl(228, 14%, 8%);
+      --surface: hsl(228, 12%, 14%);
+      --accent:  hsl(220, 90%, 62%);
+      --text:    hsl(220, 20%, 92%);
+      --muted:   hsl(220, 8%, 48%);
+      --green:   hsl(142, 70%, 52%);
+      --red:     hsl(0, 80%, 62%);
+      font-family: system-ui, "Inter", sans-serif;
+      font-size: 16px;
+      color: var(--text);
+      background: var(--bg);
+    }
+    body { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
+    .card { background: var(--surface); border: 1px solid hsl(228,14%,20%); border-radius: 16px; padding: 48px 56px; max-width: 560px; width: 100%; text-align: center; }
+    .logo { font-size: 48px; margin-bottom: 12px; }
+    h1 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
+    .tagline { color: var(--muted); font-size: 1rem; margin-bottom: 8px; }
+    .version-tag { display: inline-block; background: hsl(220,90%,62%,0.12); color: var(--accent); font-size: 0.8rem; font-weight: 700; padding: 2px 10px; border-radius: 100px; margin-bottom: 32px; }
+    .tools { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 36px; }
+    .tools li { background: hsl(228,14%,18%); color: var(--muted); font-size: 0.82rem; padding: 4px 12px; border-radius: 100px; }
+    .primary-btn { display: inline-block; background: var(--accent); color: hsl(220,14%,8%); font-size: 1rem; font-weight: 700; padding: 14px 32px; border-radius: 10px; text-decoration: none; transition: opacity 0.15s, transform 0.1s; margin-bottom: 8px; }
+    .primary-btn:hover { opacity: 0.88; }
+    .primary-btn:active { transform: scale(0.97); }
+    .also { margin-top: 16px; font-size: 0.85rem; color: var(--muted); }
+    .also a { color: var(--accent); text-decoration: none; font-weight: 600; margin: 0 6px; }
+    .also a:hover { text-decoration: underline; }
+    .warning { margin-top: 20px; font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+    .install-steps { margin-top: 28px; text-align: left; border-top: 1px solid hsl(228,14%,20%); padding-top: 24px; }
+    .install-steps h2 { font-size: 0.9rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .steps { list-style: none; counter-reset: steps; display: flex; flex-direction: column; gap: 6px; }
+    .steps li { counter-increment: steps; display: flex; gap: 10px; align-items: baseline; font-size: 0.9rem; color: var(--text); }
+    .steps li::before { content: counter(steps); background: var(--accent); color: hsl(220,14%,8%); font-weight: 800; font-size: 0.7rem; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .loading { color: var(--muted); font-size: 0.9rem; }
+    @media (max-width: 600px) { .card { padding: 32px 24px; } h1 { font-size: 1.5rem; } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo" aria-hidden="true">⚙</div>
+    <h1>Dev Toolbox</h1>
+    <p class="tagline">A JSON and API toolkit for developers</p>
+    <span id="version-tag" class="version-tag">Loading…</span>
+
+    <ul class="tools" aria-label="Included tools">
+      <li>JSON Formatter</li>
+      <li>JSON Diff</li>
+      <li>API Tester</li>
+      <li>JSON Converter</li>
+    </ul>
+
+    <!-- Primary download button (OS-detected) -->
+    <div id="primary-download">
+      <span class="loading">Detecting your platform…</span>
+    </div>
+
+    <!-- Secondary links for other platforms -->
+    <div class="also" id="also-section"></div>
+
+    <p class="warning" id="win-note" hidden>
+      Windows may show a "Windows protected your PC" warning.<br>
+      Click <strong>More info</strong>, then <strong>Run anyway</strong>. The app is not code-signed yet.
+    </p>
+
+    <div class="install-steps">
+      <h2>How to install</h2>
+      <ol class="steps">
+        <li>Download the installer for your platform.</li>
+        <li>Run the installer — the app installs itself.</li>
+        <li>Done. The app will update itself automatically.</li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    // Self-contained inline JS is acceptable here (not an Electron renderer page).
+    // This page is served over HTTP from GitHub Pages, so CSP restrictions differ.
+    (function () {
+      "use strict";
+
+      // Placeholder — replace with real GitHub username before publishing
+      var OWNER = "MeetVaghasia2274";
+      var REPO  = "dev-toolbox";
+      var FALLBACK_URL = "https://github.com/" + OWNER + "/" + REPO + "/releases/latest";
+      var API_URL = "https://api.github.com/repos/" + OWNER + "/" + REPO + "/releases/latest";
+
+      // Detect OS using userAgentData (modern) with UA string fallback
+      function detectOS() {
+        var platform = (navigator.userAgentData && navigator.userAgentData.platform) || "";
+        if (platform) {
+          if (/win/i.test(platform)) return "windows";
+          if (/mac/i.test(platform)) return "mac";
+          if (/linux/i.test(platform)) return "linux";
+        }
+        var ua = navigator.userAgent;
+        if (/Win/i.test(ua)) return "windows";
+        if (/Mac/i.test(ua)) return "mac";
+        if (/Linux/i.test(ua)) return "linux";
+        return "other";
+      }
+
+      // Match assets from the release to download URLs by pattern
+      function matchAssets(assets) {
+        var win = [], mac = [], linux = [];
+        assets.forEach(function (a) {
+          var name = a.name;
+          var url  = a.browser_download_url;
+          if (/Web Setup.*\.exe$/i.test(name)) win.push({ name: name, url: url });
+          else if (/\.dmg$/i.test(name))       mac.push({ name: name, url: url });
+          else if (/\.AppImage$/i.test(name))  linux.push({ name: name, url: url });
+        });
+        return { win: win, mac: mac, linux: linux };
+      }
+
+      // Build one download anchor element
+      function buildLink(url, label, isPrimary) {
+        var a = document.createElement("a");
+        a.setAttribute("href", url);
+        a.className = isPrimary ? "primary-btn" : "";
+        a.textContent = label;
+        return a;
+      }
+
+      // Show label for architecture from filename (arm64, x64, etc.)
+      function archLabel(name) {
+        if (/arm64/i.test(name)) return " (Apple Silicon)";
+        if (/x64/i.test(name))  return " (Intel)";
+        return "";
+      }
+
+      function render(os, assets, version) {
+        var primaryDiv = document.getElementById("primary-download");
+        var alsoDiv    = document.getElementById("also-section");
+        var winNote    = document.getElementById("win-note");
+        var vTag       = document.getElementById("version-tag");
+
+        primaryDiv.textContent = "";
+        alsoDiv.textContent    = "";
+
+        if (version) vTag.textContent = "Version " + version.replace(/^v/, "");
+        else vTag.textContent = "";
+
+        var all = { windows: assets.win, mac: assets.mac, linux: assets.linux };
+        var primary = all[os] && all[os].length ? all[os] : null;
+
+        // Primary button(s)
+        if (primary) {
+          primary.forEach(function (item) {
+            var label = "Download for " + capitalize(os) + archLabel(item.name);
+            primaryDiv.appendChild(buildLink(item.url, label, true));
+          });
+        } else {
+          primaryDiv.appendChild(buildLink(FALLBACK_URL, "Download", true));
+        }
+
+        if (os === "windows" && primary) winNote.removeAttribute("hidden");
+
+        // "Also available" for the other two platforms
+        var others = [];
+        if (os !== "windows") { assets.win.forEach(function(w){ others.push({ label: "Windows" + archLabel(w.name), url: w.url }); }); }
+        if (os !== "mac")     { assets.mac.forEach(function(m){ others.push({ label: "macOS" + archLabel(m.name), url: m.url }); }); }
+        if (os !== "linux")   { assets.linux.forEach(function(l){ others.push({ label: "Linux (.AppImage)", url: l.url }); }); }
+
+        if (others.length) {
+          var span = document.createElement("span");
+          span.textContent = "Also available: ";
+          alsoDiv.appendChild(span);
+          others.forEach(function (o, i) {
+            if (i > 0) { var comma = document.createElement("span"); comma.textContent = " · "; alsoDiv.appendChild(comma); }
+            alsoDiv.appendChild(buildLink(o.url, o.label, false));
+          });
+        }
+      }
+
+      function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+      function fallbackRender(os) {
+        render(os, { win: [], mac: [], linux: [] }, null);
+        document.getElementById("version-tag").textContent = "";
+        // Override primary button to point to releases page
+        var primaryDiv = document.getElementById("primary-download");
+        primaryDiv.textContent = "";
+        primaryDiv.appendChild(buildLink(FALLBACK_URL, "Download from GitHub Releases", true));
+      }
+
+      function init() {
+        var os = detectOS();
+        fetch(API_URL)
+          .then(function (res) {
+            if (!res.ok) throw new Error("non-ok response");
+            return res.json();
+          })
+          .then(function (data) {
+            var assets = matchAssets(data.assets || []);
+            render(os, assets, data.tag_name);
+          })
+          .catch(function () { fallbackRender(os); });
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
