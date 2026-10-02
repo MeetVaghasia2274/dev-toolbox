@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"   # Trigger only on version tags, e.g. v1.0.0
+
+permissions:
+  contents: write   # Required so the workflow can upload release assets
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      # 1. Check out the full source tree
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Set up pnpm — reads the version from "packageManager" in package.json
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
+      # 3. Set up Node.js with pnpm cache
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      # 4. Install dependencies exactly as locked
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 5. Build and publish the installer to the GitHub Release
+      #    electron-builder reads GH_TOKEN to authenticate with GitHub Releases.
+      #    CSC_IDENTITY_AUTO_DISCOVERY=false skips code-signing for now.
+      - name: Build and publish
+        run: pnpm exec electron-builder --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
